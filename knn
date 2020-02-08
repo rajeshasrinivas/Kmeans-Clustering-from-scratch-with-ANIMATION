@@ -1,0 +1,81 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+
+# You probably won't need this if you're embedding things in a tkinter plot...
+plt.ion()
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+#ax.xlim(10,10)
+#line1, = ax.plot(x, y, 'r-') # Returns a tuple of line objects, thus the comma
+
+from sklearn.datasets import make_blobs
+from matplotlib  import pyplot as plt
+import numpy as np 
+import time
+
+X, y = make_blobs(n_samples=100, centers=3, n_features=2,cluster_std=2, shuffle=True,
+                random_state=100)
+ax.set_xlim([ np.min(X[:,0])-3, np.max(X[:,0])+3])
+ax.set_ylim([ np.min(X[:,1])-3, np.max(X[:,1])+3])
+
+ax.scatter(X[:,0],X[:,1],c= 'C1',s=12, alpha = 0.4)
+
+c_num = 4
+s_num = 100
+culster_centroids = []
+culster_centroids_plot = []
+
+#intial centroid plotting
+for i in range(c_num):
+    r_num = np.random.randint(100)
+    culster_centroids.insert(i,X[r_num])
+    plt_pnt = ax.scatter(X[r_num,0],X[r_num,1],s = 100, c= 'C' + str(i+2),marker='x',edgecolors = 'face',alpha  =1)
+    culster_centroids_plot.insert(i,plt_pnt )
+    time.sleep(.5)
+    fig.canvas.draw()
+    fig.canvas.flush_events()
+    
+
+while True:
+    #assignment of datapoints to clusters
+    datapoint_cluster_num = np.zeros(s_num)
+    for i in range(s_num):
+        dist_array = np.zeros([c_num]) #.reshape(-1,1)
+        for j in range(len(culster_centroids)):
+            dist_array[j] = np.sum(np.square(culster_centroids[j] - X[i]))
+        
+        color_index = np.argmin(dist_array)
+        datapoint_cluster_num[i] = color_index
+        ax.scatter(X[i,0],X[i,1],s = 12,c= 'C' + str(color_index+2),alpha = 0.4)
+        #fig.canvas.draw()
+        #fig.canvas.flush_events()
+        
+    #print (culster_centroids_plot)
+    #move centroid:-
+    flag_cnt = 0 
+    for i in range(c_num):
+        length_cluster = len(X[datapoint_cluster_num == 1][:,0])
+        c_x_co_ordinate = np.sum(X[datapoint_cluster_num == i][:,0]) / length_cluster
+        c_y_co_ordinate = np.sum(X[datapoint_cluster_num == i][:,1]) / length_cluster
+        #print(i)
+        culster_centroids_plot[i].remove()
+        #print('vvvvvvvvvvvvvvvvvvvvv')
+        #print(culster_centroids_plot)
+        plt_pnt = ax.scatter(c_x_co_ordinate,c_y_co_ordinate,s = 100, c= 'C' + str(i+2),marker='x',edgecolors = 'face' ,alpha  =1)
+        culster_centroids_plot[i] = plt_pnt 
+        #ax.scatter(c_x_co_ordinate,c_y_co_ordinate,s = 100, c= 'C' + str(i+2),marker='x',linewidths =10000,alpha  =1)
+        time.sleep(.5)
+        fig.canvas.draw()
+        fig.canvas.flush_events()
+        print(c_x_co_ordinate,'--',culster_centroids[i][0],'---',c_y_co_ordinate,'--',culster_centroids[i][1])
+        if (round(c_x_co_ordinate,3) == round(culster_centroids[i][0],3) and round(c_y_co_ordinate,3) == round(culster_centroids[i][1],3)):
+            flag_cnt  += 1
+        culster_centroids[i][0] = round(c_x_co_ordinate,3)
+        culster_centroids[i][1] = round(c_y_co_ordinate,3)
+        
+    if flag_cnt ==  c_num :
+        break
+
