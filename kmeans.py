@@ -7,8 +7,8 @@ import time
 #cluster size
 c_num = 3
 
-
-df = pd.read_csv('C://Users//Admin//Desktop//kmeans.csv')
+#specify proper path
+df = pd.read_csv('kmeans.csv')
 X = df.values
 
 #sample size
